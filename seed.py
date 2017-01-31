@@ -1,6 +1,7 @@
 """Utility file to seed ratings database from MovieLens data in seed_data/"""
 
 from sqlalchemy import func
+from datetime import datetime
 from model import User
 from model import Rating
 from model import Movie
@@ -52,15 +53,20 @@ def load_movies():
 
         title = title[:-6]  # slice title so we don't include (year)
 
-        # handle empty released_at, so they're converted to Null in table
-        if not released_at:
+        # convert string dates to datetime objects, and handle empty
+        # released_at, so they're converted to Null in table
+        if released_at:
+            released_at = datetime.strptime(released_at, "%d-%b-%Y")
+        else:
             released_at = None
+        # if not released_at:
+        #     released_at = None
 
         # instantiate a movie!
         movie = Movie(movie_id=movie_id,
-                    title=title,
-                    released_at=released_at,
-                    imdb_url=imdb_url)
+                      title=title,
+                      released_at=released_at,
+                      imdb_url=imdb_url)
 
             # We need to add to the session or it won't ever be stored
         db.session.add(movie)
