@@ -51,7 +51,7 @@ def load_movies():
         # unpack each row, but only the first 5 fields
         movie_id, title, released_at, _, imdb_url = row.split("|")[:5]
 
-        title = title[:-6]  # slice title so we don't include (year)
+        title = title[:-7]  # slice title so we don't include (year)
 
         # convert string dates to datetime objects, and handle empty
         # released_at, so they're converted to Null in table
@@ -59,8 +59,6 @@ def load_movies():
             released_at = datetime.strptime(released_at, "%d-%b-%Y")
         else:
             released_at = None
-        # if not released_at:
-        #     released_at = None
 
         # instantiate a movie!
         movie = Movie(movie_id=movie_id,
@@ -116,4 +114,4 @@ if __name__ == "__main__":
     load_users()
     load_movies()
     load_ratings()
-    # set_val_user_id()
+    set_val_user_id()
