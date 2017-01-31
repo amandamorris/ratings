@@ -2,7 +2,7 @@
 
 from sqlalchemy import func
 from model import User
-# from model import Rating
+from model import Rating
 from model import Movie
 
 from model import connect_to_db, db
@@ -46,25 +46,45 @@ def load_movies():
 
     # Read u.user file and insert data
     for row in open("seed_data/u.item"):
-        row = row.rstrip()
-        # movie_id, title, released_at, video_release, imdb_url, extras = row.split("|")
-        movie_info = row.split("|")
-        if movie_info[1] and movie_info[2] and movie_info[4] :
-            if movie_info[1][-1] == ")":
-                movie_info[1] = movie_info[1][:-6]
-            movie = Movie(movie_id=movie_info[0],
-                        title=movie_info[1],
-                        released_at=movie_info[2],
-                        imdb_url=movie_info[4])
+        row = row.rstrip()  # strip whitespace at end of row
+        # unpack each row, but only the first 5 fields
+        movie_id, title, released_at, _, imdb_url = row.split("|")[:5]
+
+        title = title[:-6]  # slice title so we don't include (year)
+
+        # handle empty released_at, so they're converted to Null in table
+        if not released_at:
+            released_at = None
+
+        # instantiate a movie!
+        movie = Movie(movie_id=movie_id,
+                    title=title,
+                    released_at=released_at,
+                    imdb_url=imdb_url)
 
             # We need to add to the session or it won't ever be stored
-            db.session.add(movie)
+        db.session.add(movie)
 
     # Once we're done, we should commit our work
     db.session.commit()
 
 def load_ratings():
     """Load ratings from u.data into database."""
+    print "Ratings"
+
+    Rating.query.delete()
+
+    # Read u.data file and insert data
+    for row in open("seed_data/u.data"):
+        row = row.rstrip()  # strip whitespace from right
+        user_id, movie_id, score, timestamp = row.split()  # unpack row
+        rating = Rating(movie_id=movie_id,  # instantiate a Rating
+                        user_id=user_id,
+                        score=score
+                        )
+        db.session.add(rating)  # add rating to db
+
+    db.session.commit()  # commit transaction
 
 
 def set_val_user_id():
@@ -89,5 +109,5 @@ if __name__ == "__main__":
     # Import different types of data
     load_users()
     load_movies()
-    # load_ratings()
+    load_ratings()
     # set_val_user_id()
