@@ -8,6 +8,8 @@ from flask_debugtoolbar import DebugToolbarExtension
 
 from model import User, Rating, Movie, connect_to_db, db
 
+import sqlalchemy
+
 
 app = Flask(__name__)
 
@@ -33,6 +35,30 @@ def user_list():
     users = User.query.all()
     return render_template("user_list.html", users = users)
 
+@app.route('/login')
+def user_login():
+    """User sign-in page"""
+
+    return render_template("user_login.html")
+
+@app.route('/process_login', methods = ['POST'])
+def process_login():
+    """ Authenticating user."""
+
+    email = request.form.get('email')
+    password = request.form.get('password')
+
+    try:
+        User.query.filter(User.email == email).one()
+        print "User exists"
+    except sqlalchemy.orm.exc.NoResultFound:
+        print "User does not exist yet - creating new user"
+        new_user = User(email=email, password=password)
+        db.session.add(new_user)
+        db.session.commit()
+
+    print email, password
+    return redirect("/")
 
 if __name__ == "__main__":
     # We have to set debug=True here, since it has to be True at the
