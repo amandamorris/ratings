@@ -43,7 +43,11 @@ def user_login():
 
 @app.route('/process_login', methods = ['POST'])
 def process_login():
-    """ Authenticating user."""
+    """ Authenticating user.
+    TODO: change /process_login to /register, because this route is about
+    registering new users.  Also need to create separate route for signing in,
+    for existing users."
+    """
 
     email = request.form.get('email')
     password = request.form.get('password')
@@ -73,4 +77,4 @@ if __name__ == "__main__":
 
 
     
-    app.run(port=5000, host='0.0.0.0')
+    app.run(port=8000, host='0.0.0.0')
