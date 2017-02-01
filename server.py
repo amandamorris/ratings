@@ -35,14 +35,14 @@ def user_list():
     users = User.query.all()
     return render_template("user_list.html", users = users)
 
-@app.route('/login')
-def user_login():
-    """User sign-in page"""
+@app.route('/register')
+def user_registration():
+    """User registration page"""
 
-    return render_template("user_login.html")
+    return render_template("user_registration.html")
 
-@app.route('/process_login', methods = ['POST'])
-def process_login():
+@app.route('/process_registration', methods = ['POST'])
+def process_registration():
     """ Authenticating user.
     TODO: change /process_login to /register, because this route is about
     registering new users.  Also need to create separate route for signing in,
@@ -54,15 +54,45 @@ def process_login():
 
     try:
         User.query.filter(User.email == email).one()
-        print "User exists"
+        flash("This user is already registered.  Please login.")
+        return redirect('/login')
     except sqlalchemy.orm.exc.NoResultFound:
         print "User does not exist yet - creating new user"
         new_user = User(email=email, password=password)
         db.session.add(new_user)
         db.session.commit()
+        flash("This user successfully registered.")
 
     print email, password
     return redirect("/")
+
+@app.route('/login')
+def login():
+    """ Logging user. """
+
+    return render_template('login.html')
+
+@app.route('/process_login', methods = ['POST'])
+def process_login():
+    email = request.form.get('email')
+    password = request.form.get('password')
+
+    try:
+        user = User.query.filter(User.email == email).one()
+        if user.password == password:
+            session['user_id'] = user.user_id
+            print session
+
+            flash("This user successfully Login.")
+            return redirect("/")
+        else:
+            flash("Sorry, password did not match. Please try again")
+            return redirect("/login")
+
+    except sqlalchemy.orm.exc.NoResultFound:
+        flash("User does not exist yet.  Please register a new user")
+        return redirect("/register")
+
 
 if __name__ == "__main__":
     # We have to set debug=True here, since it has to be True at the
