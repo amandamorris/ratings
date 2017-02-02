@@ -6,6 +6,12 @@
 
 <body>
   Ratings
+  {% if 'user_id' in session %}
+    <a href='/logout'>Logout</a>
+  {% else %}
+    <a href='/register'>Register</a>
+    <a href='/login'>Login</a>
+  {% endif %}
   <hr>
   <!-- Show flashed messages -->
   {% with messages = get_flashed_messages() %}
@@ -13,7 +19,7 @@
           <div class="alert alert-warning">{{ message }}</div>
       {% endfor %}
   {% endwith %}
-  
+
   {% block content %} put your content here {% endblock %}
 
 </body>

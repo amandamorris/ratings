@@ -41,7 +41,7 @@ def user_registration():
 
     return render_template("user_registration.html")
 
-@app.route('/process_registration', methods = ['POST'])
+@app.route('/process_registration', methods=['POST'])
 def process_registration():
     """ Authenticating user.
     TODO: change /process_login to /register, because this route is about
@@ -72,8 +72,9 @@ def login():
 
     return render_template('login.html')
 
-@app.route('/process_login', methods = ['POST'])
+@app.route('/process_login', methods=['POST'])
 def process_login():
+
     email = request.form.get('email')
     password = request.form.get('password')
 
@@ -93,6 +94,12 @@ def process_login():
         flash("User does not exist yet.  Please register a new user")
         return redirect("/register")
 
+
+@app.route('/logout')
+def logout():
+    del session['user_id']
+    flash("You have successfully logged out.")
+    return redirect("/")
 
 if __name__ == "__main__":
     # We have to set debug=True here, since it has to be True at the
