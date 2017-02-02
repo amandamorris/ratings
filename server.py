@@ -33,7 +33,17 @@ def user_list():
     """Show list of users."""
 
     users = User.query.all()
-    return render_template("user_list.html", users = users)
+    return render_template("user_list.html", users=users)
+
+@app.route('/users/<user_id>')
+def user_details(user_id):
+    """ Display user info and their ratings. """
+    
+    user = User.query.filter(User.user_id == user_id).first()
+
+
+    return render_template("user_info.html", user=user)
+
 
 @app.route('/register')
 def user_registration():
@@ -61,7 +71,9 @@ def process_registration():
         new_user = User(email=email, password=password)
         db.session.add(new_user)
         db.session.commit()
-        flash("This user successfully registered.")
+        session['user_id'] = new_user.user_id
+        flash("This user successfully registered and logged in.")
+
 
     print email, password
     return redirect("/")
@@ -85,7 +97,7 @@ def process_login():
             print session
 
             flash("This user successfully Login.")
-            return redirect("/")
+            return redirect("/users/"+ str(user.user_id))
         else:
             flash("Sorry, password did not match. Please try again")
             return redirect("/login")
@@ -100,6 +112,8 @@ def logout():
     del session['user_id']
     flash("You have successfully logged out.")
     return redirect("/")
+
+
 
 if __name__ == "__main__":
     # We have to set debug=True here, since it has to be True at the
