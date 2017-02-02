@@ -4,7 +4,27 @@
     <h2>Movie Info</h2>
     Title: {{ movie.title }}<br>
     Release: {{ movie.released_at }}<br>
+    <br><br>
 
+  {% if 'user_id' in session %}
+
+    <form action='/process_rating/{{ movie.movie_id }}', method='POST'>
+      Choose your rating:
+        <select name="rating_value">
+          <option value="1">1</option>
+          <option value="2">2</option>
+          <option value="3">3</option>
+          <option value="4">4</option>
+          <option value="5">5</option>
+        </select>
+        <input type="submit" value="Submit rating">
+    </form>
+
+  {% else %}
+      To rate this movie, please Login.
+  {% endif %}
+
+  <br><br>
     Ratings:<br>
     <ul>
       {% for rating in movie.ratings %}
@@ -15,5 +35,6 @@
       {% endfor %}
     </ul>
 
+  <br><br>
 
 {% endblock %}

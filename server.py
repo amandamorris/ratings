@@ -61,6 +61,41 @@ def movie_details(movie_id):
 
     return render_template("movie_info.html", movie=movie)
 
+@app.route('/process_rating/<movie_id>', methods=['POST'])
+def process_rating(movie_id):
+    """ Add or update rating from user logged in."""
+
+    """TODO: movie_id is not working properly"""
+    movie = Movie.query.filter(Movie.movie_id == movie_id).first()
+
+    user_id = session['user_id']
+    score = request.form.get("rating_value")
+    rating = Rating.query.filter(Rating.user_id == user_id and
+                           Rating.movie_id == movie_id).first()
+    if rating:
+        rating.score = score
+        db.session.commit()
+        flash("Your rating has been updated.")
+
+    else:
+        rating = Rating(movie_id=movie_id,  # instantiate a Rating
+                        user_id=user_id,
+                        score=score
+                        )
+        db.session.add(rating)  # add rating to db
+        db.session.commit()
+        flash("Your rating has been added.")
+
+
+
+    # process updateing
+    # update rating to database
+    # flash rating added.
+    # print movie_id
+
+    return render_template("movie_info.html", movie=movie)
+
+
 @app.route('/register')
 def user_registration():
     """User registration page"""
