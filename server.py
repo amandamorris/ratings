@@ -45,6 +45,22 @@ def user_details(user_id):
     return render_template("user_info.html", user=user)
 
 
+@app.route('/movies')
+def list_movies():
+    """List all movies in the database."""
+
+    movies = Movie.query.order_by(Movie.title).all()
+    return render_template("/movies.html", movies=movies)
+
+@app.route('/movies/<movie_id>')
+def movie_details(movie_id):
+    """ Display movie info and their ratings. """
+    
+    movie = Movie.query.filter(Movie.movie_id == movie_id).first()
+
+
+    return render_template("movie_info.html", movie=movie)
+
 @app.route('/register')
 def user_registration():
     """User registration page"""
@@ -112,6 +128,8 @@ def logout():
     del session['user_id']
     flash("You have successfully logged out.")
     return redirect("/")
+
+
 
 
 
