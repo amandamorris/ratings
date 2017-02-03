@@ -2,13 +2,14 @@
 {% block content %}
 
     <h2>Movie Info</h2>
-    Title: {{ movie.title }}<br>
-    Release: {{ movie.released_at }}<br>
-    <br><br>
+    <p>Title: {{ movie.title }}</p>
+    <p>Release: {{ movie.released_at }}</p>
+
 
   {% if 'user_id' in session %}
 
     <form action='/process_rating/{{ movie.movie_id }}', method='POST'>
+      <!-- Movie id: {{ movie.movie_id }} -->
       Choose your rating:
         <select name="rating_value">
           <option value="1">1</option>
@@ -24,17 +25,15 @@
       To rate this movie, please Login.
   {% endif %}
 
-  <br><br>
-    Ratings:<br>
+<p>
+    Ratings:
     <ul>
       {% for rating in movie.ratings %}
           <li>
               Rating: {{ rating.score }}  
-              <br>
           </li>
       {% endfor %}
     </ul>
-
-  <br><br>
+</p>
 
 {% endblock %}

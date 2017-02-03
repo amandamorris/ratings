@@ -65,13 +65,12 @@ def movie_details(movie_id):
 def process_rating(movie_id):
     """ Add or update rating from user logged in."""
 
-    """TODO: movie_id is not working properly"""
-    movie = Movie.query.filter(Movie.movie_id == movie_id).first()
-
     user_id = session['user_id']
     score = request.form.get("rating_value")
-    rating = Rating.query.filter(Rating.user_id == user_id and
-                           Rating.movie_id == movie_id).first()
+    rating = Rating.query.filter(Rating.user_id == user_id)
+    rating = rating.filter(Rating.movie_id == movie_id).first()
+
+    # import pdb; pdb.set_trace()
     if rating:
         rating.score = score
         db.session.commit()
@@ -86,12 +85,7 @@ def process_rating(movie_id):
         db.session.commit()
         flash("Your rating has been added.")
 
-
-
-    # process updateing
-    # update rating to database
-    # flash rating added.
-    # print movie_id
+    movie = Movie.query.filter(Movie.movie_id == movie_id).first()
 
     return render_template("movie_info.html", movie=movie)
 
