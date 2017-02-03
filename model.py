@@ -30,13 +30,7 @@ class User(db.Model):
 
         return "<User user_id=%s email=%s>" % (self.user_id, self.email)
 
-    def make_pairs_and_evaluate(self, other):
-        # m = Movie.query.filter_by(title="Toy Story").one()
-        # u = User.query.get(1)    # someone we know who hasn't rated TS
-        # # ratings = u.ratings
-        # other_ratings = Rating.query.filter_by(movie_id=m.movie_id).all()
-        # other_users = [r.user for r in other_ratings]
-        # o = other_users[user_index]
+    def similarity(self, other):
 
         u_ratings = {}
         paired_ratings = []
@@ -54,6 +48,18 @@ class User(db.Model):
             result = pearson(paired_ratings)
 
         return result
+
+    def calculate_movie_similarities(self, movie_id):
+        similarity_ranks = []
+        m = Movie.query.filter_by(movie_id=movie_id).one()
+
+        other_users = [r.user for r in m.ratings]
+
+        for other_u in other_users:
+            similarity_ranks.append((self.similarity(other_u), other_u))
+        similarity_ranks.sort()
+        print similarity_ranks
+
 
 # Put your Movie and Rating model classes here.
 
