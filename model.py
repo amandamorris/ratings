@@ -2,6 +2,7 @@
 
 from flask_sqlalchemy import SQLAlchemy
 from datetime import datetime
+from correlation import pearson
 
 # This is the connection to the PostgreSQL database; we're getting this through
 # the Flask-SQLAlchemy helper library. On this, we can find the `session`
@@ -28,6 +29,31 @@ class User(db.Model):
         """Provide helpful representation when printed."""
 
         return "<User user_id=%s email=%s>" % (self.user_id, self.email)
+
+    def make_pairs_and_evaluate(self, other):
+        # m = Movie.query.filter_by(title="Toy Story").one()
+        # u = User.query.get(1)    # someone we know who hasn't rated TS
+        # # ratings = u.ratings
+        # other_ratings = Rating.query.filter_by(movie_id=m.movie_id).all()
+        # other_users = [r.user for r in other_ratings]
+        # o = other_users[user_index]
+
+        u_ratings = {}
+        paired_ratings = []
+        for r in self.ratings:
+            u_ratings[r.movie_id] = r
+
+        for r in other.ratings:
+            u_rating = u_ratings.get(r.movie_id)
+            if u_rating is not None:
+                pair = (u_rating.score, r.score)
+                paired_ratings.append(pair)
+
+        result = 0.0
+        if paired_ratings:
+            result = pearson(paired_ratings)
+
+        return result
 
 # Put your Movie and Rating model classes here.
 
